@@ -10,13 +10,11 @@
 #define new DEBUG_NEW
 #endif
 
-
 // CMusicRecordApp
 
 BEGIN_MESSAGE_MAP(CMusicRecordApp, CWinApp)
-	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
+ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
-
 
 // CMusicRecordApp construction
 
@@ -29,11 +27,9 @@ CMusicRecordApp::CMusicRecordApp()
 	// Place all significant initialization in InitInstance
 }
 
-
 // The one and only CMusicRecordApp object
 
 CMusicRecordApp theApp;
-
 
 // CMusicRecordApp initialization
 
@@ -50,7 +46,6 @@ BOOL CMusicRecordApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-
 
 	AfxEnableControlContainer();
 
@@ -75,18 +70,13 @@ BOOL CMusicRecordApp::InitInstance()
 	CMusicRecordDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
+	if (nResponse == IDOK) {
 		// TODO: Place code here to handle when the dialog is
 		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
+	} else if (nResponse == IDCANCEL) {
 		// TODO: Place code here to handle when the dialog is
 		//  dismissed with Cancel
-	}
-	else if (nResponse == -1)
-	{
+	} else if (nResponse == -1) {
 		TRACE(traceAppMsg, 0, "Warning: dialog creation failed, so application is terminating unexpectedly.\n");
 		TRACE(traceAppMsg, 0, "Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
 	}
@@ -94,8 +84,7 @@ BOOL CMusicRecordApp::InitInstance()
 	CoUninitialize();
 
 	// Delete the shell manager created above.
-	if (pShellManager != NULL)
-	{
+	if (pShellManager != NULL) {
 		delete pShellManager;
 	}
 
@@ -103,4 +92,3 @@ BOOL CMusicRecordApp::InitInstance()
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
-

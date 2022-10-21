@@ -2,22 +2,21 @@
 #include <tchar.h>
 
 //======================================================================================
-class CMemoryMapWriter
-{  
+class CMemoryMapWriter {
 public:
 	CMemoryMapWriter();
 	~CMemoryMapWriter();
 
 protected:
-	CMemoryMapWriter(const CMemoryMapWriter& obj);
+	CMemoryMapWriter(const CMemoryMapWriter &obj);
 
 public:
-	bool Open(const TCHAR* path, bool cover_write);
+	bool Open(const TCHAR *path, bool cover_write);
 	void Close();
 
-	unsigned int WriteData(void* ptr, const unsigned int& len);
+	unsigned int WriteData(void *ptr, const unsigned int &len);
 
 private:
 	class impl;
-	impl* self;
+	impl *self;
 };

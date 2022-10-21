@@ -18,28 +18,24 @@
 
 #define AV_PANEL_SIZE 8
 
-	  
-class CAboutDlg : public CDialogEx
-{
+class CAboutDlg : public CDialogEx {
 public:
 	CAboutDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+protected:
+	virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
 
-// Implementation
+	// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
-{
-}
+CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD) {}
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+void CAboutDlg::DoDataExchange(CDataExchange *pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
@@ -47,16 +43,9 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CMusicRecordDlg dialog
 
-
-
-CMusicRecordDlg::CMusicRecordDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CMusicRecordDlg::IDD, pParent)
-	, m_tCapture(this)
-	, m_bRecording(FALSE)
-	, m_strFile()
+CMusicRecordDlg::CMusicRecordDlg(CWnd *pParent /*=NULL*/) : CDialogEx(CMusicRecordDlg::IDD, pParent), m_tCapture(this), m_bRecording(FALSE), m_strFile()
 {
 	InitializeCriticalSection(&m_csSaver);
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -71,28 +60,27 @@ CMusicRecordDlg::~CMusicRecordDlg()
 	DeleteCriticalSection(&m_csSaver);
 }
 
-void CMusicRecordDlg::DoDataExchange(CDataExchange* pDX)
+void CMusicRecordDlg::DoDataExchange(CDataExchange *pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PROGRESS_VOLUMN, m_ProgressVolumn);
 }
 
 BEGIN_MESSAGE_MAP(CMusicRecordDlg, CDialogEx)
-	ON_WM_SYSCOMMAND()
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDOK, &CMusicRecordDlg::OnBnClickedStart)
-	ON_BN_CLICKED(IDC_BUTTON_STOP, &CMusicRecordDlg::OnBnClickedButtonStop)
-	ON_BN_CLICKED(IDC_BUTTON_PATH, &CMusicRecordDlg::OnBnClickedButtonPath)
-	ON_BN_CLICKED(IDC_BUTTON_BROWSER, &CMusicRecordDlg::OnBnClickedButtonBrowser)
-	ON_BN_CLICKED(IDC_BUTTON_HELP, &CMusicRecordDlg::OnBnClickedButtonHelp)
-	ON_WM_ERASEBKGND()
-	ON_WM_DESTROY()
-	ON_WM_TIMER()
-	ON_MESSAGE(MSG_SHOW_NOTE, OnShowNote)
-	ON_MESSAGE(MSG_UPDATE_PROGRESS, OnUpdateProgress)
+ON_WM_SYSCOMMAND()
+ON_WM_PAINT()
+ON_WM_QUERYDRAGICON()
+ON_BN_CLICKED(IDOK, &CMusicRecordDlg::OnBnClickedStart)
+ON_BN_CLICKED(IDC_BUTTON_STOP, &CMusicRecordDlg::OnBnClickedButtonStop)
+ON_BN_CLICKED(IDC_BUTTON_PATH, &CMusicRecordDlg::OnBnClickedButtonPath)
+ON_BN_CLICKED(IDC_BUTTON_BROWSER, &CMusicRecordDlg::OnBnClickedButtonBrowser)
+ON_BN_CLICKED(IDC_BUTTON_HELP, &CMusicRecordDlg::OnBnClickedButtonHelp)
+ON_WM_ERASEBKGND()
+ON_WM_DESTROY()
+ON_WM_TIMER()
+ON_MESSAGE(MSG_SHOW_NOTE, OnShowNote)
+ON_MESSAGE(MSG_UPDATE_PROGRESS, OnUpdateProgress)
 END_MESSAGE_MAP()
-
 
 // CMusicRecordDlg message handlers
 
@@ -106,15 +94,13 @@ BOOL CMusicRecordDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
+	CMenu *pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != NULL) {
 		BOOL bNameValid;
 		CString strAboutMenu;
 		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
 		ASSERT(bNameValid);
-		if (!strAboutMenu.IsEmpty())
-		{
+		if (!strAboutMenu.IsEmpty()) {
 			pSysMenu->AppendMenu(MF_SEPARATOR);
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
@@ -122,18 +108,18 @@ BOOL CMusicRecordDlg::OnInitDialog()
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, TRUE);  // Set big icon
+	SetIcon(m_hIcon, FALSE); // Set small icon
 
-	// TODO: Add extra initialization here	
+	// TODO: Add extra initialization here
 	ModifyStyle(0, WS_MINIMIZEBOX | WS_CLIPCHILDREN);
 
 	bool bInitOk = m_tCapture.Initialize();
 
 	GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
-	GetDlgItem(IDOK)->EnableWindow(bInitOk);	 
+	GetDlgItem(IDOK)->EnableWindow(bInitOk);
 	GetDlgItem(IDC_BUTTON_PATH)->SetWindowText(m_strDir);
-	    
+
 	if (bInitOk)
 		GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(DEVICE_READY);
 	else
@@ -147,18 +133,15 @@ BOOL CMusicRecordDlg::OnInitDialog()
 	m_tDstParam.m_uChannels = 2;
 	m_tDstParam.m_uSampleRate = m_tSrcParam.m_uSampleRate;
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return TRUE; // return TRUE  unless you set the focus to a control
 }
 
 void CMusicRecordDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
-	}
-	else
-	{
+	} else {
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
@@ -169,8 +152,7 @@ void CMusicRecordDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CMusicRecordDlg::OnPaint()
 {
-	if (IsIconic())
-	{
+	if (IsIconic()) {
 		CPaintDC dc(this); // device context for painting
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
@@ -185,9 +167,7 @@ void CMusicRecordDlg::OnPaint()
 
 		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
+	} else {
 		CDialogEx::OnPaint();
 	}
 }
@@ -199,7 +179,7 @@ HCURSOR CMusicRecordDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-BOOL CMusicRecordDlg::OnEraseBkgnd(CDC* pDC)
+BOOL CMusicRecordDlg::OnEraseBkgnd(CDC *pDC)
 {
 	return __super::OnEraseBkgnd(pDC);
 }
@@ -217,8 +197,7 @@ void CMusicRecordDlg::OnDestroy()
 void CMusicRecordDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
-	if (nIDEvent == TIMER_RESET_VOLUMN)
-	{
+	if (nIDEvent == TIMER_RESET_VOLUMN) {
 		m_ProgressVolumn.SetPos(0);
 	}
 
@@ -226,7 +205,7 @@ void CMusicRecordDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 void CMusicRecordDlg::OnBnClickedStart()
-{	
+{
 	WAVEFORMATEX wf = {};
 	wf.cbSize = 0;
 	wf.wFormatTag = WAVE_FORMAT_PCM;
@@ -239,25 +218,21 @@ void CMusicRecordDlg::OnBnClickedStart()
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
-	USES_CONVERSION; 			 
+	USES_CONVERSION;
 	MakeSureDirectoryPathExists(W2A(m_strDir.GetBuffer()));
 
-	m_strFile.Format(_T("%s\\Music-%04d%02d%02d-%02d%02d%02d-.wav"), 
-		m_strDir.GetBuffer(), 
-		st.wYear, st.wMonth, st.wDay, 
-		st.wHour, st.wMinute, st.wSecond);
+	m_strFile.Format(_T("%s\\Music-%04d%02d%02d-%02d%02d%02d-.wav"), m_strDir.GetBuffer(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
 	bool bOK = false;
 	{
 		CAutoLockCS AutoLock(m_csSaver);
 		bOK = m_tWavSaver.Open(m_strFile.GetBuffer(), &wf);
 	}
-	if (!bOK)
-	{
+	if (!bOK) {
 		MessageBox(_T("初始化文件失败"), _T("错误"), 0);
 		return;
 	}
-		   
+
 	m_bRecording = TRUE;
 
 	GetDlgItem(IDOK)->EnableWindow(FALSE);
@@ -273,7 +248,7 @@ void CMusicRecordDlg::OnBnClickedButtonStop()
 		CAutoLockCS AutoLock(m_csSaver);
 		m_tWavSaver.Close();
 	}
-					 
+
 	GetDlgItem(IDOK)->EnableWindow(TRUE);
 	GetDlgItem(IDC_BUTTON_STOP)->EnableWindow(FALSE);
 
@@ -302,7 +277,7 @@ void CMusicRecordDlg::OnDeviceError()
 
 void CMusicRecordDlg::OnDeviceReady()
 {
-	m_tCapture.GetParam(m_tSrcParam);		   
+	m_tCapture.GetParam(m_tSrcParam);
 	m_tDstParam.m_uBitWidth = 16; // AV_SAMPLE_FMT_S16
 	m_tDstParam.m_uChannels = 2;
 	m_tDstParam.m_uSampleRate = m_tSrcParam.m_uSampleRate;
@@ -314,18 +289,17 @@ void CMusicRecordDlg::OnDeviceReady()
 	SendMessage(MSG_SHOW_NOTE, (WPARAM)note.GetBuffer(), 0);
 }
 
-void CMusicRecordDlg::OnAudioData(const BYTE* data, UINT len, UINT samples)
+void CMusicRecordDlg::OnAudioData(const BYTE *data, UINT len, UINT samples)
 {
-	uint8_t* dataTemp[AV_PANEL_SIZE] = {};
+	uint8_t *dataTemp[AV_PANEL_SIZE] = {};
 	int linesize[AV_PANEL_SIZE] = {};
 	dataTemp[0] = (uint8_t *)data;
 	linesize[0] = len;
-		  
-	if (m_tVolumnCalc.UpdateVolumeMeter(dataTemp, samples, m_tSrcParam.m_uSampleRate))
-	{
-		float vl = m_tVolumnCalc.GetVolumeMeterLevel();	
+
+	if (m_tVolumnCalc.UpdateVolumeMeter(dataTemp, samples, m_tSrcParam.m_uSampleRate)) {
+		float vl = m_tVolumnCalc.GetVolumeMeterLevel();
 		int pos = int(vl * float(MAX_PROGRESS));
-	
+
 		if (pos != m_ProgressVolumn.GetPos())
 			PostMessage(MSG_UPDATE_PROGRESS, pos, 0);
 
@@ -336,17 +310,15 @@ void CMusicRecordDlg::OnAudioData(const BYTE* data, UINT len, UINT samples)
 	if (!m_bRecording)
 		return;
 
-	BYTE* pDataOut = 0;
-	int nLenOut = 0;	 
-	
-	CAudioResample::Change(dataTemp, linesize, samples,
-		AV_SAMPLE_FMT_FLT, m_tSrcParam.m_uChannels, m_tSrcParam.m_uSampleRate,
-		AV_SAMPLE_FMT_S16, m_tDstParam.m_uChannels, m_tDstParam.m_uSampleRate ,
-		pDataOut, nLenOut);
+	BYTE *pDataOut = 0;
+	int nLenOut = 0;
+
+	CAudioResample::Change(dataTemp, linesize, samples, AV_SAMPLE_FMT_FLT, m_tSrcParam.m_uChannels, m_tSrcParam.m_uSampleRate, AV_SAMPLE_FMT_S16,
+			       m_tDstParam.m_uChannels, m_tDstParam.m_uSampleRate, pDataOut, nLenOut);
 
 	if (!pDataOut)
 		return;
-	
+
 	{
 		CAutoLockCS AutoLock(m_csSaver);
 		m_tWavSaver.WriteData(pDataOut, nLenOut);
@@ -357,13 +329,13 @@ void CMusicRecordDlg::OnAudioData(const BYTE* data, UINT len, UINT samples)
 
 HRESULT CMusicRecordDlg::OnShowNote(WPARAM wp, LPARAM lp)
 {
-	const TCHAR* pNote = (const TCHAR*)wp;
+	const TCHAR *pNote = (const TCHAR *)wp;
 	GetDlgItem(IDC_STATIC_NOTE)->SetWindowText(pNote);
 	return 0;
 }
 
 HRESULT CMusicRecordDlg::OnUpdateProgress(WPARAM wp, LPARAM lp)
-{		  
+{
 	m_ProgressVolumn.SetPos(int(wp));
 	return 0;
 }
@@ -373,12 +345,7 @@ void CMusicRecordDlg::OnBnClickedButtonPath()
 	CString path = _T("/select, ");
 	path += m_strDir;
 
-	ShellExecute(NULL,
-		_T("open"),
-		_T("Explorer.exe"),
-		path.GetBuffer(),
-		 NULL,
-		SW_SHOWDEFAULT);
+	ShellExecute(NULL, _T("open"), _T("Explorer.exe"), path.GetBuffer(), NULL, SW_SHOWDEFAULT);
 }
 
 void CMusicRecordDlg::OnBnClickedButtonBrowser()
@@ -398,8 +365,7 @@ void CMusicRecordDlg::OnBnClickedButtonBrowser()
 		return;
 
 	TCHAR pszPath[MAX_PATH + 1] = {};
-	if (SHGetPathFromIDList(pidl, pszPath))
-	{
+	if (SHGetPathFromIDList(pidl, pszPath)) {
 		m_strDir = pszPath;
 		GetDlgItem(IDC_BUTTON_PATH)->SetWindowText(m_strDir);
 	}

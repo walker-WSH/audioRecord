@@ -7,54 +7,50 @@
 #include "volumn/AudioVolumeController.h"
 #include "afxcmn.h"
 
-#define MAX_PROGRESS  300
+#define MAX_PROGRESS 300
 
-#define DEVICE_ERROR  _T("扬声器检测异常，请确保插入了耳机或喇叭正常！")	
-#define DEVICE_READY  _T("设备已就绪。。。")
+#define DEVICE_ERROR _T("扬声器检测异常，请确保插入了耳机或喇叭正常！")
+#define DEVICE_READY _T("设备已就绪。。。")
 
-enum
-{
+enum {
 	TIMER_RESET_VOLUMN = 200,
 };
 
-enum
-{
+enum {
 	MSG_SHOW_NOTE = WM_USER + 100,
 	MSG_UPDATE_PROGRESS,
 };
 
-class CMusicRecordDlg : public CDialogEx
-					  , public ICaptureCallback
-{
-// Construction
+class CMusicRecordDlg : public CDialogEx, public ICaptureCallback {
+	// Construction
 public:
-	CMusicRecordDlg(CWnd* pParent = NULL);	// standard constructor
+	CMusicRecordDlg(CWnd *pParent = NULL); // standard constructor
 	virtual ~CMusicRecordDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_MUSICRECORD_DIALOG };
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+protected:
+	virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV support
 
 	// ICaptureCallback
 	virtual void OnDeviceError();
 	virtual void OnDeviceReady();
-	virtual void OnAudioData(const BYTE* data, UINT len, UINT samples);
-					 
+	virtual void OnAudioData(const BYTE *data, UINT len, UINT samples);
+
 private:
 	HICON m_hIcon;
 
-	BOOL			m_bRecording;
-	CString			m_strDir;
-	CString			m_strFile;
+	BOOL m_bRecording;
+	CString m_strDir;
+	CString m_strFile;
 
-	CAudioCapture	m_tCapture;
-	tAudioParam		m_tSrcParam;
+	CAudioCapture m_tCapture;
+	tAudioParam m_tSrcParam;
 
 	CRITICAL_SECTION m_csSaver;
-	CWaveSaver		m_tWavSaver;
-	tAudioParam		m_tDstParam;
+	CWaveSaver m_tWavSaver;
+	tAudioParam m_tDstParam;
 
 	AudioVolumeController m_tVolumnCalc;
 	CProgressCtrl m_ProgressVolumn;
@@ -73,7 +69,7 @@ public:
 	afx_msg void OnBnClickedButtonPath();
 	afx_msg void OnBnClickedButtonBrowser();
 	afx_msg void OnBnClickedButtonHelp();
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg BOOL OnEraseBkgnd(CDC *pDC);
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	HRESULT OnShowNote(WPARAM wp, LPARAM lp);
