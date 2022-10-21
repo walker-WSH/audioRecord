@@ -3,14 +3,17 @@
 #include "ScopeGuard.hpp"
 #include <assert.h>
 
-int CAudioResample::Change(uint8_t *src_data[], const int *src_linesize, const int &src_nbsamples, const AVSampleFormat &src_fmt, const int &src_channel,
-			   const int &src_sample_rate, const AVSampleFormat &dst_fmt, const int &dst_channel, const int &dst_sample_rate, BYTE *&out_buf,
+int CAudioResample::Change(uint8_t *src_data[], const int *src_linesize, const int &src_nbsamples,
+			   const AVSampleFormat &src_fmt, const int &src_channel,
+			   const int &src_sample_rate, const AVSampleFormat &dst_fmt,
+			   const int &dst_channel, const int &dst_sample_rate, BYTE *&out_buf,
 			   int &out_len)
 {
 	out_len = 0;
 	out_buf = 0;
 
-	if ((src_fmt == dst_fmt) && (src_sample_rate == dst_sample_rate) && (src_channel == dst_channel)) {
+	if ((src_fmt == dst_fmt) && (src_sample_rate == dst_sample_rate) &&
+	    (src_channel == dst_channel)) {
 		out_len = src_linesize[0];
 		out_buf = new BYTE[out_len];
 		memcpy(out_buf, src_data[0], out_len);
@@ -66,13 +69,15 @@ int CAudioResample::Change(uint8_t *src_data[], const int *src_linesize, const i
 
 	swr_init(swr_ctx);
 
-	max_dst_nb_samples = dst_nb_samples = (int)av_rescale_rnd(src_nb_samples, dst_sample_rate, src_sample_rate, AV_ROUND_UP);
+	max_dst_nb_samples = dst_nb_samples =
+		(int)av_rescale_rnd(src_nb_samples, dst_sample_rate, src_sample_rate, AV_ROUND_UP);
 	assert(max_dst_nb_samples > 0);
 	if (max_dst_nb_samples <= 0)
 		return -1;
 
 	dst_nb_channels = av_get_channel_layout_nb_channels(dst_ch_layout);
-	ret = av_samples_alloc_array_and_samples(&dst_data, &dst_linesize, dst_nb_channels, dst_nb_samples, (AVSampleFormat)dst_fmt, 0);
+	ret = av_samples_alloc_array_and_samples(&dst_data, &dst_linesize, dst_nb_channels,
+						 dst_nb_samples, (AVSampleFormat)dst_fmt, 0);
 	if (ret < 0) {
 		assert(false);
 		return -1;
@@ -81,14 +86,17 @@ int CAudioResample::Change(uint8_t *src_data[], const int *src_linesize, const i
 	ON_BLOCK_EXIT(av_freep, &dst_data);
 	ON_BLOCK_EXIT(av_freep, &dst_data[0]);
 
-	dst_nb_samples = (int)av_rescale_rnd(swr_get_delay(swr_ctx, src_sample_rate) + src_nb_samples, dst_sample_rate, src_sample_rate, AV_ROUND_UP);
+	dst_nb_samples =
+		(int)av_rescale_rnd(swr_get_delay(swr_ctx, src_sample_rate) + src_nb_samples,
+				    dst_sample_rate, src_sample_rate, AV_ROUND_UP);
 	if (dst_nb_samples <= 0) {
 		assert(false);
 		return -1;
 	}
 
 	if (dst_nb_samples > max_dst_nb_samples) {
-		ret = av_samples_alloc(dst_data, &dst_linesize, dst_nb_channels, dst_nb_samples, (AVSampleFormat)dst_fmt, 1);
+		ret = av_samples_alloc(dst_data, &dst_linesize, dst_nb_channels, dst_nb_samples,
+				       (AVSampleFormat)dst_fmt, 1);
 		max_dst_nb_samples = dst_nb_samples;
 	}
 
@@ -100,13 +108,15 @@ int CAudioResample::Change(uint8_t *src_data[], const int *src_linesize, const i
 
 	resampled_data_size = data_size;
 
-	ret = swr_convert(swr_ctx, dst_data, dst_nb_samples, (const uint8_t **)src_data, src_nbsamples);
+	ret = swr_convert(swr_ctx, dst_data, dst_nb_samples, (const uint8_t **)src_data,
+			  src_nbsamples);
 	if (ret <= 0) {
 		assert(false);
 		return -1;
 	}
 
-	resampled_data_size = av_samples_get_buffer_size(&dst_linesize, dst_nb_channels, ret, (AVSampleFormat)dst_fmt, 1);
+	resampled_data_size = av_samples_get_buffer_size(&dst_linesize, dst_nb_channels, ret,
+							 (AVSampleFormat)dst_fmt, 1);
 	if (resampled_data_size <= 0) {
 		assert(false);
 		return -1;

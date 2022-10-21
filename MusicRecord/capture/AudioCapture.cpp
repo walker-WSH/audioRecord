@@ -5,7 +5,13 @@
 #define BUFFER_TIME_100NS (5 * 10000000)
 
 //-----------------------------------------------------
-CAudioCapture::CAudioCapture(ICaptureCallback *pCb) : m_pCallback(pCb), m_hThread(), m_tParam(), m_pAudioDevice(), m_pAudioClient(), m_pCaptureClient()
+CAudioCapture::CAudioCapture(ICaptureCallback *pCb)
+	: m_pCallback(pCb),
+	  m_hThread(),
+	  m_tParam(),
+	  m_pAudioDevice(),
+	  m_pAudioClient(),
+	  m_pCaptureClient()
 {
 	m_hExitEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 }
@@ -65,7 +71,9 @@ bool CAudioCapture::_InitDevice()
 	bool bInited = false;
 	IMMDeviceEnumerator *pEnumerator = 0;
 	do {
-		HRESULT res = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void **)&pEnumerator);
+		HRESULT res = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL,
+					       __uuidof(IMMDeviceEnumerator),
+					       (void **)&pEnumerator);
 		if (FAILED(res))
 			break;
 
@@ -73,7 +81,8 @@ bool CAudioCapture::_InitDevice()
 		if (FAILED(res))
 			break;
 
-		res = m_pAudioDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, NULL, (void **)&m_pAudioClient);
+		res = m_pAudioDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, NULL,
+					       (void **)&m_pAudioClient);
 		if (FAILED(res))
 			break;
 
@@ -84,11 +93,14 @@ bool CAudioCapture::_InitDevice()
 
 		assert(pWaveFormatEx->wBitsPerSample == 32); // default format is float
 
-		res = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_LOOPBACK, BUFFER_TIME_100NS, 0, pWaveFormatEx, NULL);
+		res = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
+						 AUDCLNT_STREAMFLAGS_LOOPBACK, BUFFER_TIME_100NS, 0,
+						 pWaveFormatEx, NULL);
 		if (FAILED(res))
 			break;
 
-		res = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient), (void **)&m_pCaptureClient);
+		res = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient),
+						 (void **)&m_pCaptureClient);
 		if (FAILED(res))
 			break;
 
@@ -140,7 +152,8 @@ bool CAudioCapture::_CaptureFrame()
 			break;
 		}
 
-		res = m_pCaptureClient->GetBuffer(&pDataBuf, &uNBSamples, &uFlags, &u64Pos, &u64TimeStamp);
+		res = m_pCaptureClient->GetBuffer(&pDataBuf, &uNBSamples, &uFlags, &u64Pos,
+						  &u64TimeStamp);
 		if (FAILED(res))
 			break;
 

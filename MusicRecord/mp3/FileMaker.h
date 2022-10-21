@@ -37,11 +37,14 @@ public:
 	int InsertFrame(AVFrame *pFrame, int nStreamIndex);
 
 private:
-	int InitOutputFile(const char *pFileOut, const tAudioInputParams *pAudioParams, int *outAudioIndex);
-	AVStream *AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID CodecID, enum AVMediaType MediaType);
+	int InitOutputFile(const char *pFileOut, const tAudioInputParams *pAudioParams,
+			   int *outAudioIndex);
+	AVStream *AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID CodecID,
+			    enum AVMediaType MediaType);
 
 	int InitFilters();
-	int InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *pEncodeCtx, const char *pFilterSpec);
+	int InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *pEncodeCtx,
+			    const char *pFilterSpec);
 
 	int EncodeWriteFrame(AVFrame *pFiltFrame, unsigned int nStreamIndex, int *pGetPkt);
 	int FlushEncoder(unsigned int nStreamIndex);

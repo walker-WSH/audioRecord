@@ -45,7 +45,11 @@ END_MESSAGE_MAP()
 
 // CMusicRecordDlg dialog
 
-CMusicRecordDlg::CMusicRecordDlg(CWnd *pParent /*=NULL*/) : CDialogEx(CMusicRecordDlg::IDD, pParent), m_tCapture(this), m_bRecording(FALSE), m_strFile()
+CMusicRecordDlg::CMusicRecordDlg(CWnd *pParent /*=NULL*/)
+	: CDialogEx(CMusicRecordDlg::IDD, pParent),
+	  m_tCapture(this),
+	  m_bRecording(FALSE),
+	  m_strFile()
 {
 	InitializeCriticalSection(&m_csSaver);
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -213,7 +217,8 @@ void CMusicRecordDlg::OnBnClickedStart()
 	wf.nSamplesPerSec = m_tDstParam.m_uSampleRate;
 	wf.wBitsPerSample = m_tDstParam.m_uBitWidth;
 	wf.nBlockAlign = (wf.nChannels * wf.wBitsPerSample) / 8;
-	wf.nAvgBytesPerSec = m_tDstParam.m_uSampleRate * m_tDstParam.m_uChannels * (m_tDstParam.m_uBitWidth / 8);
+	wf.nAvgBytesPerSec =
+		m_tDstParam.m_uSampleRate * m_tDstParam.m_uChannels * (m_tDstParam.m_uBitWidth / 8);
 
 	SYSTEMTIME st;
 	GetLocalTime(&st);
@@ -221,7 +226,8 @@ void CMusicRecordDlg::OnBnClickedStart()
 	USES_CONVERSION;
 	MakeSureDirectoryPathExists(W2A(m_strDir.GetBuffer()));
 
-	m_strFile.Format(_T("%s\\Music-%04d%02d%02d-%02d%02d%02d-.wav"), m_strDir.GetBuffer(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+	m_strFile.Format(_T("%s\\Music-%04d%02d%02d-%02d%02d%02d-.wav"), m_strDir.GetBuffer(),
+			 st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
 	bool bOK = false;
 	{
@@ -313,8 +319,10 @@ void CMusicRecordDlg::OnAudioData(const BYTE *data, UINT len, UINT samples)
 	BYTE *pDataOut = 0;
 	int nLenOut = 0;
 
-	CAudioResample::Change(dataTemp, linesize, samples, AV_SAMPLE_FMT_FLT, m_tSrcParam.m_uChannels, m_tSrcParam.m_uSampleRate, AV_SAMPLE_FMT_S16,
-			       m_tDstParam.m_uChannels, m_tDstParam.m_uSampleRate, pDataOut, nLenOut);
+	CAudioResample::Change(dataTemp, linesize, samples, AV_SAMPLE_FMT_FLT,
+			       m_tSrcParam.m_uChannels, m_tSrcParam.m_uSampleRate,
+			       AV_SAMPLE_FMT_S16, m_tDstParam.m_uChannels,
+			       m_tDstParam.m_uSampleRate, pDataOut, nLenOut);
 
 	if (!pDataOut)
 		return;

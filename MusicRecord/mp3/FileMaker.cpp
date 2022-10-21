@@ -15,7 +15,8 @@ CFileMaker::~CFileMaker()
 	Close();
 }
 
-AVStream *CFileMaker::AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID CodecID, enum AVMediaType MediaType)
+AVStream *CFileMaker::AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID CodecID,
+				enum AVMediaType MediaType)
 {
 	AVCodec *pCodec = avcodec_find_encoder(CodecID);
 	if (!pCodec) {
@@ -38,7 +39,8 @@ AVStream *CFileMaker::AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID Co
 	return pStream;
 }
 
-int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pAudioParams, int *outAudioIndex)
+int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pAudioParams,
+			       int *outAudioIndex)
 {
 	int nReturn;
 	AVStream *pStream;
@@ -92,7 +94,8 @@ int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pA
 	return 0;
 }
 
-int CFileMaker::Open(const char *pFileOut, const tAudioInputParams *pAudioParams, int *outAudioIndex)
+int CFileMaker::Open(const char *pFileOut, const tAudioInputParams *pAudioParams,
+		     int *outAudioIndex)
 {
 	if (outAudioIndex)
 		*outAudioIndex = -1;
@@ -174,7 +177,8 @@ void CFileMaker::Close()
 	m_pFormatCtxOutput = NULL;
 }
 
-int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *pEncodeCtx, const char *pFilterSpec)
+int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *pEncodeCtx,
+				const char *pFilterSpec)
 {
 	char args[512];
 	int ret = 0;
@@ -202,19 +206,25 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 			goto end;
 		}
 
-		_snprintf_s(args, sizeof(args), "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d", pEncodeCtx->width, pEncodeCtx->height,
-			    pEncodeCtx->pix_fmt, pEncodeCtx->time_base.num, pEncodeCtx->time_base.den, pEncodeCtx->sample_aspect_ratio.num,
+		_snprintf_s(args, sizeof(args),
+			    "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+			    pEncodeCtx->width, pEncodeCtx->height, pEncodeCtx->pix_fmt,
+			    pEncodeCtx->time_base.num, pEncodeCtx->time_base.den,
+			    pEncodeCtx->sample_aspect_ratio.num,
 			    pEncodeCtx->sample_aspect_ratio.den);
 
-		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL, filter_graph);
+		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL,
+						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL, filter_graph);
+		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL,
+						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = av_opt_set_bin(buffersink_ctx, "pix_fmts", (uint8_t *)&pEncodeCtx->pix_fmt, sizeof(pEncodeCtx->pix_fmt), AV_OPT_SEARCH_CHILDREN);
+		ret = av_opt_set_bin(buffersink_ctx, "pix_fmts", (uint8_t *)&pEncodeCtx->pix_fmt,
+				     sizeof(pEncodeCtx->pix_fmt), AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0)
 			goto end;
 	} else if (pEncodeCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -224,28 +234,37 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 			goto end;
 		}
 
-		_snprintf_s(args, sizeof(args), "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%I64x", pEncodeCtx->time_base.num,
-			    pEncodeCtx->time_base.den, pEncodeCtx->sample_rate, av_get_sample_fmt_name(pEncodeCtx->sample_fmt), pEncodeCtx->channel_layout);
+		_snprintf_s(args, sizeof(args),
+			    "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%I64x",
+			    pEncodeCtx->time_base.num, pEncodeCtx->time_base.den,
+			    pEncodeCtx->sample_rate, av_get_sample_fmt_name(pEncodeCtx->sample_fmt),
+			    pEncodeCtx->channel_layout);
 
-		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL, filter_graph);
+		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL,
+						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL, filter_graph);
+		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL,
+						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = av_opt_set_bin(buffersink_ctx, "sample_fmts", (uint8_t *)&pEncodeCtx->sample_fmt, sizeof(pEncodeCtx->sample_fmt), AV_OPT_SEARCH_CHILDREN);
+		ret = av_opt_set_bin(buffersink_ctx, "sample_fmts",
+				     (uint8_t *)&pEncodeCtx->sample_fmt,
+				     sizeof(pEncodeCtx->sample_fmt), AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0)
 			goto end;
 
-		ret = av_opt_set_bin(buffersink_ctx, "channel_layouts", (uint8_t *)&pEncodeCtx->channel_layout, sizeof(pEncodeCtx->channel_layout),
-				     AV_OPT_SEARCH_CHILDREN);
+		ret = av_opt_set_bin(buffersink_ctx, "channel_layouts",
+				     (uint8_t *)&pEncodeCtx->channel_layout,
+				     sizeof(pEncodeCtx->channel_layout), AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0)
 			goto end;
 
-		ret = av_opt_set_bin(buffersink_ctx, "sample_rates", (uint8_t *)&pEncodeCtx->sample_rate, sizeof(pEncodeCtx->sample_rate),
-				     AV_OPT_SEARCH_CHILDREN);
+		ret = av_opt_set_bin(buffersink_ctx, "sample_rates",
+				     (uint8_t *)&pEncodeCtx->sample_rate,
+				     sizeof(pEncodeCtx->sample_rate), AV_OPT_SEARCH_CHILDREN);
 		if (ret < 0)
 			goto end;
 	} else {
@@ -265,7 +284,8 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 	if (!outputs->name || !inputs->name)
 		goto end;
 
-	if ((ret = avfilter_graph_parse_ptr(filter_graph, pFilterSpec, &inputs, &outputs, NULL)) < 0)
+	if ((ret = avfilter_graph_parse_ptr(filter_graph, pFilterSpec, &inputs, &outputs, NULL)) <
+	    0)
 		goto end;
 
 	if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
@@ -313,7 +333,8 @@ int CFileMaker::InitFilters()
 			pFilterSpec = "anull"; /* passthrough (dummy) filter for audio */
 		}
 
-		ret = InitFilterInner(&m_arrayFilterCtx[i], m_pFormatCtxOutput->streams[i]->codec, pFilterSpec);
+		ret = InitFilterInner(&m_arrayFilterCtx[i], m_pFormatCtxOutput->streams[i]->codec,
+				      pFilterSpec);
 		if (ret) {
 			return 1;
 		}
@@ -326,7 +347,8 @@ int CFileMaker::InsertFrame(AVFrame *pFrame, int nStreamIndex)
 {
 	int ret = 0;
 
-	if (!m_pFormatCtxOutput || nStreamIndex < 0 || (unsigned int)nStreamIndex >= m_pFormatCtxOutput->nb_streams || !m_arrayFilterCtx ||
+	if (!m_pFormatCtxOutput || nStreamIndex < 0 ||
+	    (unsigned int)nStreamIndex >= m_pFormatCtxOutput->nb_streams || !m_arrayFilterCtx ||
 	    !m_arrayFilterCtx[nStreamIndex].pFilterGraph) {
 		return 1;
 	}
@@ -343,7 +365,8 @@ int CFileMaker::InsertFrame(AVFrame *pFrame, int nStreamIndex)
 			break;
 		}
 
-		ret = av_buffersink_get_frame(m_arrayFilterCtx[nStreamIndex].pFilterCtxSink, pFiltFrame);
+		ret = av_buffersink_get_frame(m_arrayFilterCtx[nStreamIndex].pFilterCtxSink,
+					      pFiltFrame);
 		if (ret < 0) {
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
 				ret = 0;
@@ -390,11 +413,14 @@ int CFileMaker::EncodeWriteFrame(AVFrame *pFiltFrame, unsigned int nStreamIndex,
 
 	pkt.stream_index = nStreamIndex;
 
-	pkt.dts = av_rescale_q_rnd(pkt.dts, pStream->codec->time_base, pStream->time_base, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+	pkt.dts = av_rescale_q_rnd(pkt.dts, pStream->codec->time_base, pStream->time_base,
+				   (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 
-	pkt.pts = av_rescale_q_rnd(pkt.pts, pStream->codec->time_base, pStream->time_base, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+	pkt.pts = av_rescale_q_rnd(pkt.pts, pStream->codec->time_base, pStream->time_base,
+				   (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 
-	pkt.duration = (int)av_rescale_q(pkt.duration, pStream->codec->time_base, pStream->time_base);
+	pkt.duration =
+		(int)av_rescale_q(pkt.duration, pStream->codec->time_base, pStream->time_base);
 
 	ret = av_interleaved_write_frame(m_pFormatCtxOutput, &pkt);
 	av_free_packet(&pkt); // ÊÍ·ÅÄÚ´æ
@@ -407,7 +433,8 @@ int CFileMaker::FlushEncoder(unsigned int nStreamIndex)
 	int ret;
 	int got_frame;
 
-	if (!(m_pFormatCtxOutput->streams[nStreamIndex]->codec->codec->capabilities & CODEC_CAP_DELAY)) {
+	if (!(m_pFormatCtxOutput->streams[nStreamIndex]->codec->codec->capabilities &
+	      CODEC_CAP_DELAY)) {
 		return 0;
 	}
 

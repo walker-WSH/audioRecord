@@ -66,7 +66,9 @@ bool VolumeMeter::_ProcessAudioData(unsigned char *data[], unsigned int samples)
 		adata[i] = (float *)data[i];
 
 	while (left) {
-		size_t frames = (m_IntervalFrames + left > m_UpdateFrames) ? m_UpdateFrames - m_IntervalFrames : left;
+		size_t frames = (m_IntervalFrames + left > m_UpdateFrames)
+					? m_UpdateFrames - m_IntervalFrames
+					: left;
 
 		_SumAndMax(adata, frames, &m_IntervalSum, &m_IntervalMax);
 

@@ -13,7 +13,8 @@ public:
 	CWaveSaver();
 	virtual ~CWaveSaver();
 
-	bool Open(const TCHAR *pFile, const WAVEFORMATEX *pWaveFormat, int nDurationSeconds = 5 * 60);
+	bool Open(const TCHAR *pFile, const WAVEFORMATEX *pWaveFormat,
+		  int nDurationSeconds = 5 * 60);
 	unsigned int WriteData(const BYTE *pData, const int &nLen);
 	void Close();
 };

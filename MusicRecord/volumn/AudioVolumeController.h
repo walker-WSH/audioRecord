@@ -42,9 +42,15 @@ public:
 
 	float GetCurMul() { return m_CurMul; }
 
-	static float MulToDB(const float mul) { return (mul == 0.0f) ? -INFINITY : (20.0f * log10f(mul)); }
+	static float MulToDB(const float mul)
+	{
+		return (mul == 0.0f) ? -INFINITY : (20.0f * log10f(mul));
+	}
 
-	static float DBToMul(const float db) { return isfinite((double)db) ? powf(10.0f, db / 20.0f) : 0.0f; }
+	static float DBToMul(const float db)
+	{
+		return isfinite((double)db) ? powf(10.0f, db / 20.0f) : 0.0f;
+	}
 
 private:
 	float _CubicDeflectionToDB(const float def)
@@ -91,7 +97,9 @@ public:
 		else if (def <= 0.0f)
 			return -INFINITY;
 
-		return -(LOG_RANGE_DB + LOG_OFFSET_DB) * powf((LOG_RANGE_DB + LOG_OFFSET_DB) / LOG_OFFSET_DB, -def) + LOG_OFFSET_DB;
+		return -(LOG_RANGE_DB + LOG_OFFSET_DB) *
+			       powf((LOG_RANGE_DB + LOG_OFFSET_DB) / LOG_OFFSET_DB, -def) +
+		       LOG_OFFSET_DB;
 	}
 
 	static float LogDBToDef(const float db)
@@ -101,7 +109,8 @@ public:
 		else if (db <= -96.0f)
 			return 0.0f;
 
-		return (-log10f(-db + LOG_OFFSET_DB) - LOG_RANGE_VAL) / (LOG_OFFSET_VAL - LOG_RANGE_VAL);
+		return (-log10f(-db + LOG_OFFSET_DB) - LOG_RANGE_VAL) /
+		       (LOG_OFFSET_VAL - LOG_RANGE_VAL);
 	}
 
 private:
@@ -140,9 +149,14 @@ public:
 	virtual ~AudioVolumeController() {}
 
 	// Process audio data and check if need to update UI
-	bool UpdateVolumeMeter(unsigned char *data[], unsigned int samples, int nSampleRate) { return m_VolumeMeter.Update(data, samples, nSampleRate); }
+	// The type of one sample is float
+	bool UpdateVolumeMeter(unsigned char *data[], unsigned int samples, int nSampleRate)
+	{
+		return m_VolumeMeter.Update(data, samples, nSampleRate);
+	}
 
 	// Get level value to update volume meter UI
+	// The returned value presents the percent of volume
 	float GetVolumeMeterLevel() { return m_VolumeMeter.GetLevel(); }
 
 private:
@@ -152,7 +166,10 @@ private:
 		m_VolumeMeter.SetCurDB(m_Fader.GetCurDB());
 	}
 
-	bool _CloseFloat(float f1, float f2, float precision) { return fabsf(f1 - f2) <= precision; }
+	bool _CloseFloat(float f1, float f2, float precision)
+	{
+		return fabsf(f1 - f2) <= precision;
+	}
 
 private:
 	Fader m_Fader;

@@ -36,7 +36,14 @@ private:
 
 //------------------------------------------------------------------------
 CMemoryMapWriter::impl::impl()
-	: handle_file_(), handle_map_(), original_size_(), file_size_(), cur_block_pos_(), cur_block_ptr_(), cur_block_size_(), cur_block_offset_()
+	: handle_file_(),
+	  handle_map_(),
+	  original_size_(),
+	  file_size_(),
+	  cur_block_pos_(),
+	  cur_block_ptr_(),
+	  cur_block_size_(),
+	  cur_block_offset_()
 {
 }
 
@@ -69,7 +76,8 @@ void CMemoryMapWriter::impl::i_CloseFileMap()
 void CMemoryMapWriter::impl::i_CloseFile()
 {
 	if (handle_file_ && (handle_file_ != INVALID_HANDLE_VALUE)) {
-		::SetFilePointer(handle_file_, original_size_ + cur_block_pos_ + cur_block_offset_, 0, FILE_BEGIN);
+		::SetFilePointer(handle_file_, original_size_ + cur_block_pos_ + cur_block_offset_,
+				 0, FILE_BEGIN);
 		::SetEndOfFile(handle_file_);
 		::CloseHandle(handle_file_);
 	}
@@ -84,9 +92,13 @@ void CMemoryMapWriter::impl::i_CloseFile()
 
 bool CMemoryMapWriter::impl::i_OpenFile(const TCHAR *path, bool cover_write)
 {
-	handle_file_ = ::CreateFile(path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	handle_file_ = ::CreateFile(path, GENERIC_READ | GENERIC_WRITE,
+				    FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING,
+				    FILE_ATTRIBUTE_NORMAL, 0);
 	if (!handle_file_ || handle_file_ == INVALID_HANDLE_VALUE) {
-		handle_file_ = ::CreateFile(path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0);
+		handle_file_ = ::CreateFile(path, GENERIC_READ | GENERIC_WRITE,
+					    FILE_SHARE_READ | FILE_SHARE_WRITE, 0, CREATE_NEW,
+					    FILE_ATTRIBUTE_NORMAL, 0);
 	}
 
 	if (!handle_file_ || handle_file_ == INVALID_HANDLE_VALUE) {
@@ -126,7 +138,8 @@ bool CMemoryMapWriter::impl::i_CreateFileMap()
 
 	cur_block_size_ = memfile_block_size;
 	cur_block_offset_ = 0;
-	cur_block_ptr_ = (char *)::MapViewOfFile(handle_map_, FILE_MAP_READ | FILE_MAP_WRITE, 0, cur_block_pos_, cur_block_size_);
+	cur_block_ptr_ = (char *)::MapViewOfFile(handle_map_, FILE_MAP_READ | FILE_MAP_WRITE, 0,
+						 cur_block_pos_, cur_block_size_);
 	// 如果追加的文件数据长度不为空 且小于64K 则此处会返回NULL
 
 	if (!cur_block_ptr_) {
@@ -167,7 +180,8 @@ void CMemoryMapWriter::impl::i_MapNextBlock()
 	cur_block_ptr_ = 0;
 
 	cur_block_pos_ += cur_block_size_;
-	cur_block_ptr_ = (char *)::MapViewOfFile(handle_map_, FILE_MAP_READ | FILE_MAP_WRITE, 0, cur_block_pos_, cur_block_size_);
+	cur_block_ptr_ = (char *)::MapViewOfFile(handle_map_, FILE_MAP_READ | FILE_MAP_WRITE, 0,
+						 cur_block_pos_, cur_block_size_);
 	cur_block_offset_ = 0;
 
 	if (cur_block_ptr_ == 0)
