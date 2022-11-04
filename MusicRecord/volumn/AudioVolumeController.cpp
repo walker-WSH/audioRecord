@@ -9,7 +9,7 @@ VolumeMeter::VolumeMeter() : m_SampleRate()
 	m_CurDB = 0.0f;
 }
 
-bool VolumeMeter::Update(unsigned char *data[], unsigned int samples, int nSampleRate)
+bool VolumeMeter::Update(unsigned char *data[], unsigned int samplesPerChannel, int nSampleRate)
 {
 	if (nSampleRate <= 0)
 		return false;
@@ -18,7 +18,7 @@ bool VolumeMeter::Update(unsigned char *data[], unsigned int samples, int nSampl
 		_ResetSampleRate(nSampleRate);
 	}
 
-	bool updated = _ProcessAudioData(data, samples);
+	bool updated = _ProcessAudioData(data, samplesPerChannel);
 
 	if (updated) {
 		float mul = Fader::DBToMul(m_CurDB);
@@ -55,11 +55,11 @@ void VolumeMeter::_ResetSampleRate(int nSampleRate)
 	m_peak = 0.0f;
 }
 
-bool VolumeMeter::_ProcessAudioData(unsigned char *data[], unsigned int samples)
+bool VolumeMeter::_ProcessAudioData(unsigned char *data[], unsigned int samplesPerChannel)
 {
 	bool updated = false;
 
-	size_t left = samples;
+	size_t left = samplesPerChannel;
 	float *adata[MAX_AV_PLANES];
 
 	for (size_t i = 0; i < MAX_AV_PLANES; i++)

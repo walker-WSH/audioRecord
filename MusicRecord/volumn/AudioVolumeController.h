@@ -115,7 +115,7 @@ public:
 
 private:
 	void _ResetSampleRate(int nSampleRate);
-	bool _ProcessAudioData(unsigned char *data[], unsigned int samples);
+	bool _ProcessAudioData(unsigned char *data[], unsigned int samplesPerChannel);
 	void _SumAndMax(float *data[MAX_AV_PLANES], size_t frames, float *sum, float *max);
 	void _CalculateIntervalLevels();
 
@@ -150,9 +150,10 @@ public:
 
 	// Process audio data and check if need to update UI
 	// The type of one sample is float
-	bool UpdateVolumeMeter(unsigned char *data[], unsigned int samples, int nSampleRate)
+	bool UpdateVolumeMeter(unsigned char *data[], unsigned int samplesPerChannel,
+			       int nSampleRate)
 	{
-		return m_VolumeMeter.Update(data, samples, nSampleRate);
+		return m_VolumeMeter.Update(data, samplesPerChannel, nSampleRate);
 	}
 
 	// Get level value to update volume meter UI
