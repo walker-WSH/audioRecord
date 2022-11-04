@@ -5,6 +5,7 @@
 #include "wave/WaveSaver.h"
 #include "mp3/FileMaker.h"
 #include "volumn/AudioVolumeController.h"
+#include "mp3/audio-resampler.h"
 #include "afxcmn.h"
 
 #define MAX_PROGRESS 300
@@ -24,7 +25,7 @@ enum {
 class CMusicRecordDlg : public CDialogEx, public ICaptureCallback {
 	// Construction
 public:
-	CMusicRecordDlg(CWnd *pParent = NULL); // standard constructor
+	CMusicRecordDlg(CWnd *pParent = nullptr); // standard constructor
 	virtual ~CMusicRecordDlg();
 
 	// Dialog Data
@@ -54,6 +55,8 @@ private:
 
 	AudioVolumeController m_tVolumnCalc;
 	CProgressCtrl m_ProgressVolumn;
+
+	std::shared_ptr<audio_resampler> m_pResample;
 
 protected:
 	// Generated message map functions

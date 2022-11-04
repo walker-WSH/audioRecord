@@ -21,13 +21,13 @@ AVStream *CFileMaker::AddStream(AVFormatContext *pAVFormatCtx, enum AVCodecID Co
 	AVCodec *pCodec = avcodec_find_encoder(CodecID);
 	if (!pCodec) {
 		assert(false);
-		return NULL;
+		return nullptr;
 	}
 
-	AVStream *pStream = avformat_new_stream(pAVFormatCtx, NULL);
+	AVStream *pStream = avformat_new_stream(pAVFormatCtx, nullptr);
 	if (!pStream) {
 		assert(false);
-		return NULL;
+		return nullptr;
 	}
 
 	pStream->id = pAVFormatCtx->nb_streams - 1;
@@ -47,7 +47,7 @@ int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pA
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
 
-	if (avformat_alloc_output_context2(&m_pFormatCtxOutput, NULL, NULL, pFileOut) < 0) {
+	if (avformat_alloc_output_context2(&m_pFormatCtxOutput, nullptr, nullptr, pFileOut) < 0) {
 		assert(false);
 		return 1;
 	}
@@ -72,10 +72,10 @@ int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pA
 			pCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
 		}
 
-		int err = avcodec_open2(pCodecCtx, pCodec, NULL);
+		int err = avcodec_open2(pCodecCtx, pCodec, nullptr);
 		if (err < 0) {
 			assert(false);
-			return NULL;
+			return 1;
 		}
 	}
 
@@ -86,7 +86,7 @@ int CFileMaker::InitOutputFile(const char *pFileOut, const tAudioInputParams *pA
 		}
 	}
 
-	nReturn = avformat_write_header(m_pFormatCtxOutput, NULL);
+	nReturn = avformat_write_header(m_pFormatCtxOutput, nullptr);
 	if (nReturn < 0) {
 		return 5;
 	}
@@ -136,7 +136,7 @@ void CFileMaker::Close()
 	if (m_arrayFilterCtx) {
 		for (unsigned int i = 0; i < nStreamNum; i++) {
 			if (m_arrayFilterCtx[i].pFilterGraph) {
-				InsertFrame(NULL, i);
+				InsertFrame(nullptr, i);
 				FlushEncoder(i);
 			}
 		}
@@ -173,8 +173,8 @@ void CFileMaker::Close()
 		delete[] m_arrayFilterCtx;
 	}
 
-	m_arrayFilterCtx = NULL;
-	m_pFormatCtxOutput = NULL;
+	m_arrayFilterCtx = nullptr;
+	m_pFormatCtxOutput = nullptr;
 }
 
 int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *pEncodeCtx,
@@ -184,12 +184,12 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 	int ret = 0;
 
 	// 不用释放内存
-	AVFilter *buffersrc = NULL;
-	AVFilter *buffersink = NULL;
+	AVFilter *buffersrc = nullptr;
+	AVFilter *buffersink = nullptr;
 
 	// 需要释放内存
-	AVFilterContext *buffersrc_ctx = NULL;
-	AVFilterContext *buffersink_ctx = NULL;
+	AVFilterContext *buffersrc_ctx = nullptr;
+	AVFilterContext *buffersink_ctx = nullptr;
 
 	// 需要释放内存 AVFilterGraph在Close()中释放
 	AVFilterInOut *outputs = avfilter_inout_alloc();
@@ -213,13 +213,13 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 			    pEncodeCtx->sample_aspect_ratio.num,
 			    pEncodeCtx->sample_aspect_ratio.den);
 
-		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL,
+		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, nullptr,
 						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL,
-						   filter_graph);
+		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", nullptr,
+						   nullptr, filter_graph);
 		if (ret < 0)
 			goto end;
 
@@ -240,13 +240,13 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 			    pEncodeCtx->sample_rate, av_get_sample_fmt_name(pEncodeCtx->sample_fmt),
 			    pEncodeCtx->channel_layout);
 
-		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, NULL,
+		ret = avfilter_graph_create_filter(&buffersrc_ctx, buffersrc, "in", args, nullptr,
 						   filter_graph);
 		if (ret < 0)
 			goto end;
 
-		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", NULL, NULL,
-						   filter_graph);
+		ret = avfilter_graph_create_filter(&buffersink_ctx, buffersink, "out", nullptr,
+						   nullptr, filter_graph);
 		if (ret < 0)
 			goto end;
 
@@ -274,21 +274,21 @@ int CFileMaker::InitFilterInner(tFilteringContext *pFilterCtx, AVCodecContext *p
 	outputs->name = av_strdup("in");
 	outputs->filter_ctx = buffersrc_ctx;
 	outputs->pad_idx = 0;
-	outputs->next = NULL;
+	outputs->next = nullptr;
 
 	inputs->name = av_strdup("out");
 	inputs->filter_ctx = buffersink_ctx;
 	inputs->pad_idx = 0;
-	inputs->next = NULL;
+	inputs->next = nullptr;
 
 	if (!outputs->name || !inputs->name)
 		goto end;
 
-	if ((ret = avfilter_graph_parse_ptr(filter_graph, pFilterSpec, &inputs, &outputs, NULL)) <
-	    0)
+	if ((ret = avfilter_graph_parse_ptr(filter_graph, pFilterSpec, &inputs, &outputs,
+					    nullptr)) < 0)
 		goto end;
 
-	if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
+	if ((ret = avfilter_graph_config(filter_graph, nullptr)) < 0)
 		goto end;
 
 	pFilterCtx->pFilterCtxSrc = buffersrc_ctx;
@@ -376,7 +376,7 @@ int CFileMaker::InsertFrame(AVFrame *pFrame, int nStreamIndex)
 
 		pFiltFrame->pict_type = AV_PICTURE_TYPE_NONE;
 
-		ret = EncodeWriteFrame(pFiltFrame, (unsigned int)nStreamIndex, NULL);
+		ret = EncodeWriteFrame(pFiltFrame, (unsigned int)nStreamIndex, nullptr);
 		av_frame_free(&pFiltFrame);
 
 		if (ret < 0)
@@ -397,7 +397,7 @@ int CFileMaker::EncodeWriteFrame(AVFrame *pFiltFrame, unsigned int nStreamIndex,
 
 	AVPacket pkt;
 	av_init_packet(&pkt);
-	pkt.data = NULL;
+	pkt.data = nullptr;
 	pkt.size = 0;
 
 	if (pStream->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -439,7 +439,7 @@ int CFileMaker::FlushEncoder(unsigned int nStreamIndex)
 	}
 
 	while (1) {
-		ret = EncodeWriteFrame(NULL, nStreamIndex, &got_frame);
+		ret = EncodeWriteFrame(nullptr, nStreamIndex, &got_frame);
 
 		if (ret < 0)
 			break;

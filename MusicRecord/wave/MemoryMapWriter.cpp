@@ -140,7 +140,7 @@ bool CMemoryMapWriter::impl::i_CreateFileMap()
 	cur_block_offset_ = 0;
 	cur_block_ptr_ = (char *)::MapViewOfFile(handle_map_, FILE_MAP_READ | FILE_MAP_WRITE, 0,
 						 cur_block_pos_, cur_block_size_);
-	// 如果追加的文件数据长度不为空 且小于64K 则此处会返回NULL
+	// 如果追加的文件数据长度不为空 且小于64K 则此处会返回nullptr
 
 	if (!cur_block_ptr_) {
 		Close();
@@ -211,7 +211,7 @@ CMemoryMapWriter::CMemoryMapWriter()
 
 CMemoryMapWriter::CMemoryMapWriter(const CMemoryMapWriter &obj)
 {
-	self = NULL;
+	self = nullptr;
 }
 
 CMemoryMapWriter::~CMemoryMapWriter()

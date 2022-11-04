@@ -65,7 +65,7 @@ BOOL CMusicRecordApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	CoInitialize(NULL);
+	CoInitialize(nullptr);
 
 	CMusicRecordDlg dlg;
 	m_pMainWnd = &dlg;
@@ -86,7 +86,7 @@ BOOL CMusicRecordApp::InitInstance()
 	CoUninitialize();
 
 	// Delete the shell manager created above.
-	if (pShellManager != NULL) {
+	if (pShellManager != nullptr) {
 		delete pShellManager;
 	}
 

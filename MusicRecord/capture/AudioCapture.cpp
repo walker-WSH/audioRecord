@@ -13,7 +13,7 @@ CAudioCapture::CAudioCapture(ICaptureCallback *pCb)
 	  m_pAudioClient(),
 	  m_pCaptureClient()
 {
-	m_hExitEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hExitEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 }
 
 CAudioCapture::~CAudioCapture()
@@ -81,8 +81,8 @@ bool CAudioCapture::_InitDevice()
 		if (FAILED(res))
 			break;
 
-		res = m_pAudioDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, NULL,
-					       (void **)&m_pAudioClient);
+		res = m_pAudioDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER,
+					       nullptr, (void **)&m_pAudioClient);
 		if (FAILED(res))
 			break;
 
@@ -95,7 +95,7 @@ bool CAudioCapture::_InitDevice()
 
 		res = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
 						 AUDCLNT_STREAMFLAGS_LOOPBACK, BUFFER_TIME_100NS, 0,
-						 pWaveFormatEx, NULL);
+						 pWaveFormatEx, nullptr);
 		if (FAILED(res))
 			break;
 
@@ -180,7 +180,7 @@ bool IsHandleSigned(const HANDLE &hEvent, DWORD dwMilliSecond)
 
 void CAudioCapture::_InnerCapture()
 {
-	CoInitialize(NULL);
+	CoInitialize(nullptr);
 
 	bool bReinitFlag = false;
 	while (IsHandleSigned(m_hExitEvent, 10) == false) {

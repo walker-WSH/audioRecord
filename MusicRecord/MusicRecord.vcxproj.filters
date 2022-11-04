@@ -60,9 +60,6 @@
     <ClInclude Include="mp3\FileMaker.h">
       <Filter>mp3</Filter>
     </ClInclude>
-    <ClInclude Include="mp3\AudioResample.h">
-      <Filter>mp3</Filter>
-    </ClInclude>
     <ClInclude Include="mp3\ScopeGuard.hpp">
       <Filter>mp3</Filter>
     </ClInclude>
@@ -70,6 +67,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="volumn\AudioVolumeController.h">
+      <Filter>volumn</Filter>
+    </ClInclude>
+    <ClInclude Include="mp3\audio-resampler.h">
       <Filter>volumn</Filter>
     </ClInclude>
   </ItemGroup>
@@ -95,10 +95,10 @@
     <ClCompile Include="mp3\FileMaker.cpp">
       <Filter>mp3</Filter>
     </ClCompile>
-    <ClCompile Include="mp3\AudioResample.cpp">
-      <Filter>mp3</Filter>
-    </ClCompile>
     <ClCompile Include="volumn\AudioVolumeController.cpp">
+      <Filter>volumn</Filter>
+    </ClCompile>
+    <ClCompile Include="mp3\audio-resampler.cpp">
       <Filter>volumn</Filter>
     </ClCompile>
   </ItemGroup>

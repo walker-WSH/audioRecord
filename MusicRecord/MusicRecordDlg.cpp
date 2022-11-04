@@ -7,7 +7,6 @@
 #include "MusicRecordDlg.h"
 #include "afxdialogex.h"
 #include "AutoLockCS.hpp"
-#include "mp3/AudioResample.h"
 #include <Dbghelp.h>
 
 #pragma comment(lib, "Dbghelp.lib")
@@ -45,7 +44,7 @@ END_MESSAGE_MAP()
 
 // CMusicRecordDlg dialog
 
-CMusicRecordDlg::CMusicRecordDlg(CWnd *pParent /*=NULL*/)
+CMusicRecordDlg::CMusicRecordDlg(CWnd *pParent /*=nullptr*/)
 	: CDialogEx(CMusicRecordDlg::IDD, pParent),
 	  m_tCapture(this),
 	  m_bRecording(FALSE),
@@ -99,7 +98,7 @@ BOOL CMusicRecordDlg::OnInitDialog()
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu *pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL) {
+	if (pSysMenu != nullptr) {
 		BOOL bNameValid;
 		CString strAboutMenu;
 		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -310,7 +309,7 @@ void CMusicRecordDlg::OnAudioData(const BYTE *data, UINT len, UINT samples)
 			PostMessage(MSG_UPDATE_PROGRESS, pos, 0);
 
 		KillTimer(TIMER_RESET_VOLUMN);
-		SetTimer(TIMER_RESET_VOLUMN, 1000, NULL);
+		SetTimer(TIMER_RESET_VOLUMN, 1000, nullptr);
 	}
 
 	if (!m_bRecording)
@@ -319,20 +318,35 @@ void CMusicRecordDlg::OnAudioData(const BYTE *data, UINT len, UINT samples)
 	BYTE *pDataOut = 0;
 	int nLenOut = 0;
 
-	CAudioResample::Change(dataTemp, linesize, samples, AV_SAMPLE_FMT_FLT,
-			       m_tSrcParam.m_uChannels, m_tSrcParam.m_uSampleRate,
-			       AV_SAMPLE_FMT_S16, m_tDstParam.m_uChannels,
-			       m_tDstParam.m_uSampleRate, pDataOut, nLenOut);
+	if (!m_pResample) {
+		resample_info src;
+		src.channel_num = m_tSrcParam.m_uChannels;
+		src.samples_rate = m_tSrcParam.m_uSampleRate;
+		src.audio_format = AV_SAMPLE_FMT_FLT;
 
-	if (!pDataOut)
-		return;
+		resample_info dst;
+		dst.channel_num = m_tDstParam.m_uChannels;
+		dst.samples_rate = m_tDstParam.m_uSampleRate;
+		dst.audio_format = AV_SAMPLE_FMT_S16;
 
-	{
-		CAutoLockCS AutoLock(m_csSaver);
-		m_tWavSaver.WriteData(pDataOut, nLenOut);
+		m_pResample = std::make_shared<audio_resampler>();
+		m_pResample->init_resampler(&src, &dst);
 	}
 
-	delete[] pDataOut;
+	uint8_t *output_data[AV_PANEL_SIZE] = {};
+	uint32_t out_frames_per_channel;
+	uint64_t ts_offset;
+	bool bOK = m_pResample->resample_audio(dataTemp, samples, output_data,
+					       &out_frames_per_channel, &ts_offset);
+	if (!bOK) {
+		m_pResample->uninit_resampler();
+		m_pResample.reset();
+		return;
+	}
+
+	CAutoLockCS AutoLock(m_csSaver);
+	m_tWavSaver.WriteData(output_data[0], out_frames_per_channel * m_tDstParam.m_uChannels *
+						      2); // 2 : AV_SAMPLE_FMT_S16
 }
 
 HRESULT CMusicRecordDlg::OnShowNote(WPARAM wp, LPARAM lp)
@@ -353,23 +367,24 @@ void CMusicRecordDlg::OnBnClickedButtonPath()
 	CString path = _T("/select, ");
 	path += m_strDir;
 
-	ShellExecute(NULL, _T("open"), _T("Explorer.exe"), path.GetBuffer(), NULL, SW_SHOWDEFAULT);
+	ShellExecute(nullptr, _T("open"), _T("Explorer.exe"), path.GetBuffer(), nullptr,
+		     SW_SHOWDEFAULT);
 }
 
 void CMusicRecordDlg::OnBnClickedButtonBrowser()
 {
 	BROWSEINFO bi;
 	bi.hwndOwner = *this;
-	bi.pidlRoot = NULL;
-	bi.pszDisplayName = NULL;
+	bi.pidlRoot = nullptr;
+	bi.pszDisplayName = nullptr;
 	bi.lpszTitle = _T("Set Save Path");
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
-	bi.lpfn = NULL;
+	bi.lpfn = nullptr;
 	bi.lParam = 0;
 	bi.iImage = 0;
 
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl == NULL)
+	if (pidl == nullptr)
 		return;
 
 	TCHAR pszPath[MAX_PATH + 1] = {};

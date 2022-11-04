@@ -109,7 +109,7 @@
   <ItemGroup>
     <ClInclude Include="AutoLockCS.hpp" />
     <ClInclude Include="capture\AudioCapture.h" />
-    <ClInclude Include="mp3\AudioResample.h" />
+    <ClInclude Include="mp3\audio-resampler.h" />
     <ClInclude Include="mp3\ffmpeg.hpp" />
     <ClInclude Include="mp3\FileMaker.h" />
     <ClInclude Include="mp3\ScopeGuard.hpp" />
@@ -124,7 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="capture\AudioCapture.cpp" />
-    <ClCompile Include="mp3\AudioResample.cpp" />
+    <ClCompile Include="mp3\audio-resampler.cpp" />
     <ClCompile Include="mp3\FileMaker.cpp" />
     <ClCompile Include="MusicRecord.cpp" />
     <ClCompile Include="MusicRecordDlg.cpp" />
