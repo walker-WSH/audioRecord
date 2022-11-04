@@ -1,8 +1,13 @@
 #include "stdafx.h"
 #include "audio-resampler.h"
 
-bool audio_resampler::init_resampler(const struct resample_info *src,
-				     const struct resample_info *dst)
+#pragma comment(lib, "avcodec.lib")
+#pragma comment(lib, "avformat.lib")
+#pragma comment(lib, "avutil.lib")
+#pragma comment(lib, "swresample.lib")
+#pragma comment(lib, "avfilter.lib")
+
+bool audio_resampler::init_resampler(const resample_info *src, const resample_info *dst)
 {
 	int64_t input_layout = av_get_default_channel_layout(src->channel_num);
 	int64_t output_layout = av_get_default_channel_layout(dst->channel_num);

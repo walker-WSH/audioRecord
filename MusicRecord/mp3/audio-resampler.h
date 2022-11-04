@@ -18,7 +18,7 @@ public:
 	audio_resampler() = default;
 	virtual ~audio_resampler() { uninit_resampler(); }
 
-	bool init_resampler(const struct resample_info *src, const struct resample_info *dst);
+	bool init_resampler(const resample_info *src, const resample_info *dst);
 	void uninit_resampler();
 
 	bool resample_audio(const uint8_t *const input_data[AV_NUM_DATA_POINTERS],
@@ -30,8 +30,8 @@ protected:
 	bool is_planar_format(enum AVSampleFormat audio_format);
 
 private:
-	struct resample_info input_info;
-	struct resample_info output_info;
+	resample_info input_info;
+	resample_info output_info;
 	uint32_t output_planes = 0;
 
 	std::shared_ptr<SwrContext> context = nullptr;
